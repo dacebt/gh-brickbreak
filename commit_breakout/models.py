@@ -4,6 +4,18 @@ Data models and type definitions for Commit Breakout.
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict
 from datetime import date
+from .constants import (
+    CELL_SIZE,
+    CELL_SPACING,
+    PADDING_TOP,
+    PADDING_BOTTOM,
+    PADDING_LEFT,
+    PADDING_RIGHT,
+    COLOR_BACKGROUND,
+    COLOR_GRID,
+    COLOR_PADDLE,
+    COLOR_BALL,
+)
 
 
 @dataclass
@@ -46,17 +58,17 @@ class Action:
 @dataclass
 class RenderContext:
     """Rendering configuration and helper methods."""
-    cell_size: int = 12
-    cell_spacing: int = 3
-    padding_top: int = 40
-    padding_bottom: int = 80
-    padding_left: int = 40
-    padding_right: int = 40
+    cell_size: int = CELL_SIZE
+    cell_spacing: int = CELL_SPACING
+    padding_top: int = PADDING_TOP
+    padding_bottom: int = PADDING_BOTTOM
+    padding_left: int = PADDING_LEFT
+    padding_right: int = PADDING_RIGHT
     
-    background_color: tuple = (13, 17, 23)
-    grid_color: tuple = (22, 27, 34)
-    paddle_color: tuple = (201, 209, 217)
-    ball_color: tuple = (255, 223, 0)
+    background_color: tuple = COLOR_BACKGROUND
+    grid_color: tuple = COLOR_GRID
+    paddle_color: tuple = COLOR_PADDLE
+    ball_color: tuple = COLOR_BALL
     
     brick_colors: Dict[int, tuple] = field(default_factory=lambda: {
         1: (14, 68, 41),

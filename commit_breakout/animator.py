@@ -5,7 +5,7 @@ from typing import Generator, Optional
 from PIL import Image
 from .game_state import GameState
 from .renderer import Renderer
-from .strategies import BaseStrategy
+from .strategies import BaseStrategy, FollowBallStrategy
 from .models import ContributionData, RenderContext
 from .constants import *
 
@@ -57,32 +57,59 @@ class Animator:
             frame = self.renderer.add_watermark(frame, self.watermark)
         yield frame
         
-        # Execute strategy actions
-        action_generator = self.strategy.generate_actions(self.game_state)
-        
-        for action in action_generator:
-            # Set paddle target
-            self.game_state.paddle.move_to(action.target_x)
-            
-            # Animate until paddle can take next action
-            frames_since_action = 0
-            while not self.game_state.can_take_action():
-                events = self.game_state.animate()
+        if isinstance(self.strategy, FollowBallStrategy):
+            # Reactive loop: keep updating paddle target to track the ball.
+            while not self.game_state.is_complete():
+                ball = self.game_state.ball
+                # Lead the target a bit to avoid vertical "ping-pong" and encourage angles.
+                lead = ball.vx * PADDLE_FOLLOW_LEAD_FRAMES
+                if lead > PADDLE_FOLLOW_MAX_OFFSET:
+                    lead = PADDLE_FOLLOW_MAX_OFFSET
+                elif lead < -PADDLE_FOLLOW_MAX_OFFSET:
+                    lead = -PADDLE_FOLLOW_MAX_OFFSET
+
+                # When the ball is descending, bias the paddle slightly off-center to create angle.
+                if ball.vy > 0:
+                    direction = 1 if ball.vx >= 0 else -1
+                    lead += direction * (PADDLE_WIDTH * 0.15)
+
+                self.game_state.paddle.move_to(ball.x + lead)
+                self.game_state.animate()
                 
                 frame = self.renderer.render_frame(self.game_state)
                 if self.watermark:
                     frame = self.renderer.add_watermark(frame, self.watermark)
                 yield frame
                 
-                frames_since_action += 1
-                
-                # Safety: break if stuck
-                if frames_since_action > 500:
+                if self.game_state.frame_count >= MAX_FRAMES:
                     break
+        else:
+            # Execute strategy actions
+            action_generator = self.strategy.generate_actions(self.game_state)
             
-            # Safety: check frame count
-            if self.game_state.frame_count >= MAX_FRAMES:
-                break
+            for action in action_generator:
+                # Set paddle target
+                self.game_state.paddle.move_to(action.target_x)
+                
+                # Animate until paddle can take next action
+                frames_since_action = 0
+                while not self.game_state.can_take_action():
+                    self.game_state.animate()
+                    
+                    frame = self.renderer.render_frame(self.game_state)
+                    if self.watermark:
+                        frame = self.renderer.add_watermark(frame, self.watermark)
+                    yield frame
+                    
+                    frames_since_action += 1
+                    
+                    # Safety: break if stuck
+                    if frames_since_action > 500:
+                        break
+                
+                # Safety: check frame count
+                if self.game_state.frame_count >= MAX_FRAMES:
+                    break
         
         # Continue animating until all bricks destroyed
         force_kill_countdown = 100

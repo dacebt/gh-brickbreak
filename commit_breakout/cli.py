@@ -37,8 +37,8 @@ Examples:
     parser.add_argument(
         '--strategy',
         choices=list(STRATEGY_MAP.keys()),
-        default='random',
-        help='Paddle AI strategy (default: random)'
+        default='follow',
+        help='Paddle AI strategy (default: follow)'
     )
     
     parser.add_argument(

@@ -9,12 +9,12 @@ NUM_DAYS = 7            # Days per week (rows)
 GRID_OFFSET_WEEKS = 1   # Skip first week if incomplete
 
 # Visual/Rendering Constants
-CELL_SIZE = 12          # Brick size in pixels
+CELL_SIZE = 14          # Brick size in pixels
 CELL_SPACING = 3        # Gap between bricks in pixels
-PADDING_TOP = 40        # Top margin in pixels
-PADDING_BOTTOM = 80     # Bottom margin (space for paddle)
-PADDING_LEFT = 40       # Left margin
-PADDING_RIGHT = 40      # Right margin
+PADDING_TOP = 50        # Top margin in pixels
+PADDING_BOTTOM = 120    # Bottom margin (space for paddle)
+PADDING_LEFT = 50       # Left margin
+PADDING_RIGHT = 50      # Right margin
 
 # Calculated dimensions
 CELL_BLOCK_SIZE = CELL_SIZE + CELL_SPACING  # 15px total per cell
@@ -30,9 +30,11 @@ BALL_RADIUS = 4         # Ball radius
 BALL_SPEED = 3.0        # Ball movement speed
 PADDLE_SPEED = 5.0      # Paddle horizontal speed
 BOUNCE_ANGLE_MAX = 60   # Max bounce angle from vertical (degrees)
+PADDLE_FOLLOW_LEAD_FRAMES = 6  # Predictive lead for follow strategy
+PADDLE_FOLLOW_MAX_OFFSET = PADDLE_WIDTH * 0.35  # Max follow offset from ball x
 
 # Game Positioning (in grid units)
-PADDLE_ROW = NUM_DAYS + 2  # Paddle row position (below grid)
+PADDLE_ROW = NUM_DAYS + 3  # Paddle row position (below grid)
 BALL_START_ROW = PADDLE_ROW - 1  # Ball starting row
 BALL_START_COL = NUM_WEEKS / 2   # Ball starting column (center)
 
