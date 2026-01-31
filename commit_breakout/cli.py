@@ -3,7 +3,9 @@ Command-line interface for Commit Breakout.
 """
 import argparse
 import sys
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 from .github_client import GitHubClient
 from .animator import Animator
 from .strategies import STRATEGY_MAP
@@ -11,6 +13,9 @@ from .strategies import STRATEGY_MAP
 
 def main():
     """Main CLI entry point."""
+    # Load environment variables from .env file
+    load_dotenv()
+
     parser = argparse.ArgumentParser(
         description='Commit Breakout - Visualize GitHub contributions as a Breakout game',
         formatter_class=argparse.RawDescriptionHelpFormatter,
