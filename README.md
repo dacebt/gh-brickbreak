@@ -146,6 +146,77 @@ jobs:
 
 The action will run daily and commit the updated GIF to your repository.
 
+### Keeping your main branch history clean
+
+If you run this action in a **profile or portfolio repo**, committing the GIF to `main` every time it changes will clutter your git history. Here are alternatives that avoid daily commits on `main`:
+
+| Approach | How it works | Pros | Cons |
+|----------|---------------|------|------|
+| **Separate output branch** | Push the GIF to a branch like `breakout-output` and force-push so that branch has at most one “latest” commit. | Main stays clean; GIF still hosted on GitHub; stable raw URL. | One extra branch. |
+| **GitHub Pages** | Deploy only the GIF (e.g. to `gh-pages`). | Main untouched; optional custom domain. | Requires Pages setup; URL is `https://user.github.io/repo/game.gif`. |
+| **Gist** | Script updates a Gist with the GIF; README embeds the Gist’s raw URL. | No commits in your repo at all. | Gist history grows; need to create/manage Gist. |
+| **External hosting** | Upload GIF to S3, R2, imgur, etc.; store only the URL in the repo (or in a small file). | No binary commits; full control over caching/URL. | Extra service and (maybe) cost. |
+| **Commit only when changed** | Keep the workflow above; it already runs `git diff` and only commits when `game.gif` changes. | Simple; fewer commits than “every day” when contributions are unchanged. | When contributions change, you still get a commit on `main`. |
+
+**Recommended for portfolios:** use the **separate output branch** so the GIF is still in the same repo and your profile README can reference it, without touching `main`. Example workflow:
+
+1. Create `.github/workflows/update-game.yml`:
+
+```yaml
+name: Update Breakout Game (output branch only)
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-game:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: breakout-output
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install gh-brickbreak
+        run: pip install git+https://github.com/dacebt/gh-brickbreak.git
+
+      - name: Generate game
+        run: |
+          gh-brickbreak ${{ github.repository_owner }} \
+            --token ${{ secrets.GITHUB_TOKEN }} \
+            --output game.gif \
+            --fps 40
+
+      - name: Push to output branch (no history on main)
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add game.gif
+          git diff --staged --quiet && exit 0
+          git commit -m "Update breakout game [skip ci]"
+          git push --force origin HEAD:breakout-output
+```
+
+2. Ensure the `breakout-output` branch exists (create it once from the repo’s default branch with an empty commit or a placeholder, or the first run will create it when pushing).
+
+3. In your profile README, point the image at the file on that branch (replace `USER` and `REPO`):
+
+```markdown
+![My GitHub Breakout Game](https://raw.githubusercontent.com/USER/REPO/breakout-output/game.gif)
+```
+
+Your `main` (or default) branch never gets these updates; only `breakout-output` does, and you can force-push so that branch stays at a single tip.
+
 ### Customization
 
 Modify the action to customize your game:
