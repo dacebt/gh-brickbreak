@@ -3,7 +3,6 @@ AI strategies for autonomous paddle control.
 """
 from abc import ABC, abstractmethod
 from typing import Iterator, List
-import random
 from .models import Action
 from .game_state import GameState
 from .game_entities import Brick
@@ -119,38 +118,9 @@ class RowStrategy(BaseStrategy):
                     yield Action(target_x=target_x)
 
 
-class RandomStrategy(BaseStrategy):
-    """
-    Randomly select columns to target.
-    Creates unpredictable, chaotic ball movement.
-    """
-    
-    def generate_actions(self, game_state: GameState) -> Iterator[Action]:
-        """Randomly target brick columns."""
-        while not game_state.is_complete():
-            active_bricks = game_state.get_active_bricks()
-            
-            if not active_bricks:
-                break
-            
-            # Pick random column that has bricks
-            columns_with_bricks = list({brick.col for brick in active_bricks})
-            target_col = random.choice(columns_with_bricks)
-            
-            # Find lowest brick in that column (bottom-up clearing)
-            column_bricks = [b for b in active_bricks if b.col == target_col]
-            lowest_brick = max(column_bricks, key=lambda b: b.row)
-            
-            # Yield actions for this brick's strength
-            for _ in range(lowest_brick.strength):
-                target_x, _ = game_state.render_context.grid_to_pixel(target_col, 0)
-                yield Action(target_x=target_x)
-
-
 # Strategy registry for CLI selection
 STRATEGY_MAP = {
     'follow': FollowBallStrategy,
     'column': ColumnStrategy,
     'row': RowStrategy,
-    'random': RandomStrategy,
 }

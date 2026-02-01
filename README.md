@@ -65,7 +65,6 @@ gh-brickbreak octocat -o my_game.gif
 gh-brickbreak octocat --strategy follow     # Paddle follows ball (default)
 gh-brickbreak octocat --strategy column     # Clear column by column
 gh-brickbreak octocat --strategy row        # Clear row by row
-gh-brickbreak octocat --strategy random     # Random column targeting
 
 # Adjust frame rate
 gh-brickbreak octocat --fps 30              # Lower FPS = smaller file
@@ -86,10 +85,9 @@ gh-brickbreak octocat --token ghp_xxxxx
 
 ### Strategies
 
-- **follow**: Paddle follows the ball's horizontal position
+- **follow**: Paddle follows the ball's horizontal position (default)
 - **column**: Clears bricks column by column, left to right
 - **row**: Clears bricks row by row, bottom to top, alternating direction
-- **random**: Randomly targets columns with remaining bricks
 
 ## GitHub Action (Automated Daily Updates)
 
@@ -129,7 +127,6 @@ jobs:
           gh-brickbreak ${{ github.repository_owner }} \
             --token ${{ secrets.GITHUB_TOKEN }} \
             --output game.gif \
-            --strategy random \
             --fps 40
 
       - name: Commit and push if changed
@@ -153,7 +150,7 @@ The action will run daily and commit the updated GIF to your repository.
 
 Modify the action to customize your game:
 
-- Change `--strategy` to `follow`, `column`, `row`, or `random`
+- Change `--strategy` to `follow`, `column`, or `row`
 - Adjust `--fps` (default: 40)
 - Change `--output` filename
 - Add `--watermark "your text"` for custom watermark
