@@ -1,4 +1,4 @@
-# Commit Breakout
+# gh-brickbreak
 
 Transform your GitHub contribution graph into an animated Breakout-style brick-breaking game. Each day of contributions becomes a brick, with brick strength determined by commit count. Watch an AI-controlled paddle break through your coding history!
 
@@ -22,8 +22,8 @@ Transform your GitHub contribution graph into an animated Breakout-style brick-b
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/dacebt/commit-breakout.git
-   cd commit-breakout
+   git clone https://github.com/dacebt/gh-brickbreak.git
+   cd gh-brickbreak
    ```
 
 2. Install the package:
@@ -49,7 +49,7 @@ Transform your GitHub contribution graph into an animated Breakout-style brick-b
 
 ```bash
 # Generate game for a GitHub user
-commit-breakout octocat
+gh-brickbreak octocat
 ```
 
 This creates `octocat_breakout.gif` in the current directory.
@@ -58,30 +58,30 @@ This creates `octocat_breakout.gif` in the current directory.
 
 ```bash
 # Custom output filename
-commit-breakout octocat --output my_game.gif
-commit-breakout octocat -o my_game.gif
+gh-brickbreak octocat --output my_game.gif
+gh-brickbreak octocat -o my_game.gif
 
 # Choose paddle AI strategy
-commit-breakout octocat --strategy follow     # Paddle follows ball (default)
-commit-breakout octocat --strategy column     # Clear column by column
-commit-breakout octocat --strategy row        # Clear row by row
-commit-breakout octocat --strategy random     # Random column targeting
+gh-brickbreak octocat --strategy follow     # Paddle follows ball (default)
+gh-brickbreak octocat --strategy column     # Clear column by column
+gh-brickbreak octocat --strategy row        # Clear row by row
+gh-brickbreak octocat --strategy random     # Random column targeting
 
 # Adjust frame rate
-commit-breakout octocat --fps 30              # Lower FPS = smaller file
-commit-breakout octocat --fps 40              # Higher FPS = smoother animation
+gh-brickbreak octocat --fps 30              # Lower FPS = smaller file
+gh-brickbreak octocat --fps 40              # Higher FPS = smoother animation
 
 # Add watermark
-commit-breakout octocat --watermark "github.com/octocat"
+gh-brickbreak octocat --watermark "github.com/octocat"
 
 # Save contribution data to JSON (for reuse)
-commit-breakout octocat --raw-output data.json
+gh-brickbreak octocat --raw-output data.json
 
 # Load from saved JSON (avoids API call)
-commit-breakout octocat --raw-input data.json --output game.gif
+gh-brickbreak octocat --raw-input data.json --output game.gif
 
 # Pass token directly instead of using .env
-commit-breakout octocat --token ghp_xxxxx
+gh-brickbreak octocat --token ghp_xxxxx
 ```
 
 ### Strategies
@@ -121,12 +121,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install commit-breakout
-        run: pip install git+https://github.com/dacebt/commit-breakout.git
+      - name: Install gh-brickbreak
+        run: pip install git+https://github.com/dacebt/gh-brickbreak.git
 
       - name: Generate game
         run: |
-          commit-breakout ${{ github.repository_owner }} \
+          gh-brickbreak ${{ github.repository_owner }} \
             --token ${{ secrets.GITHUB_TOKEN }} \
             --output game.gif \
             --strategy random \

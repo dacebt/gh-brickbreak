@@ -1,5 +1,5 @@
 [project]
-name = "commit-breakout"
+name = "gh-brickbreak"
 version = "0.1.0"
 description = "Visualize GitHub contributions as a Breakout-style game"
 readme = "README.md"
@@ -34,7 +34,7 @@ dev = [
 ]
 
 [project.scripts]
-commit-breakout = "commit_breakout.cli:main"
+gh-brickbreak = "gh_brickbreak.cli:main"
 
 [build-system]
 requires = ["setuptools>=65.0.0", "wheel"]
@@ -42,7 +42,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["commit_breakout*"]
+include = ["gh_brickbreak*"]
 
 [tool.black]
 line-length = 100
